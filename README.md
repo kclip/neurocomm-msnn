@@ -49,7 +49,7 @@ sh scripts/DirectTraining/tet/graded_spike_evaluation_power.sh
 
 <!-- Citation -->
 ## Citation
-For more details, please refer to the <a href="https://doi.org/10.3389/fnins.2022.759900">paper</a>.
+For more details, please refer to the <a href="https://arxiv.org/abs/2411.04728">paper</a>.
 
 ```
 @article{wu2024neuromorphic,

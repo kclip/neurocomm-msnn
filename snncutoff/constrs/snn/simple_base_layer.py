@@ -1,0 +1,62 @@
+import torch
+from torch import nn
+from typing import Type
+from torch.autograd import Function
+from snncutoff.gradients import ZIF
+from snncutoff.neuron import LIF
+
+
+class SimpleBaseLayer(nn.Module):
+    def __init__(self, 
+                 T: int = 4, 
+                 L: int = 4, 
+                 vthr: float = 1.0, 
+                 tau: float = 0.5, 
+                 mem_init: float = 0., 
+                 neuron: Type[object]=LIF,
+                 regularizer: Type[nn.Module] = None, 
+                 surogate: Type[Function] = ZIF,
+                 multistep: bool=True,
+                 reset_mode: str = 'hard'
+                 ):
+        super(SimpleBaseLayer, self).__init__()
+        
+        self.vthr = vthr
+        self.tau = tau
+        self.T = T
+        self.mem_init = mem_init 
+        self.neuron=neuron(vthr=vthr, tau=tau)
+        self.neuron.reset()
+        self.regularizer = regularizer
+        self.multistep = multistep
+        self.surogate=surogate.apply
+        self.gamma = 1.0
+        self.reset_mode = reset_mode
+
+    def _mem_update_multistep(self,x):
+        spike_post = []
+        mem_post = []
+        self.neuron.reset()
+        for t in range(self.T):
+            vmem = self.neuron.vmem + x[t]
+            spike =  self.surogate(vmem - self.vthr, self.gamma)
+            vmem = self.vmem_reset(vmem,spike)
+            self.neuron.updateMem(vmem)
+            spike_post.append(spike)
+            mem_post.append(vmem)
+        return torch.stack(spike_post,dim=0), torch.stack(mem_post,dim=0)
+    
+    def vmem_reset(self, x, spike):
+        if self.reset_mode == 'hard':
+            return x * (1-spike)
+        elif self.reset_mode == 'soft':  
+            return x - self.vthr*spike
+        
+    def forward(self, x):  
+        spike_post, mem_post = self._mem_update_multistep(x)
+        if self.regularizer is not None:
+            loss = self.regularizer(spike_post.clone(), mem_post.clone()/self.vthr)
+        return spike_post
+        
+
+

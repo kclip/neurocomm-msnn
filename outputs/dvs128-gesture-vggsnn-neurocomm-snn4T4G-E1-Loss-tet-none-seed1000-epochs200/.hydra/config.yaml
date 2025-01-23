@@ -1,0 +1,62 @@
+base:
+  epochs: 200
+  batch_size: 128
+  start_epoch: 0
+  weight_decay: 0.0005
+  lr: 0.1
+  print_freq: 1000
+  seed: 1000
+  nprocs: 0
+  local_rank: 0
+  workers: 8
+  log: none
+  project: none
+  port: '10640'
+  gpu_id: none
+  data: dvs128-gesture
+  model: vggsnn-neurocomm
+  dataset_path: /scratch/users/k2474860/project/neurocomm/dvs-gesture-10-X
+  checkpoint_save: false
+  checkpoint_path: none
+neuron_params:
+  vthr: 1.0
+  T: 10
+  tau: 0.5
+  mem_init: 0.0
+  num_bit: 4
+  B: 2
+  modulation: noiseless
+  num_ofdma: 100
+  multistep: true
+  reset_mode: hard
+snn-train:
+  method: snn
+  arch_conversion: true
+  ann_constrs: none
+  snn_layers: baselayer
+  regularizer: none
+  TEBN: false
+  T: 4
+  L: 4
+  evaluate: 'False'
+  loss: tet
+  TET: 'False'
+  multistep_ann: 'True'
+  multistep: true
+  add_time_dim: false
+  means: 1.0
+  lamb: 0.001
+  alpha: 0.0
+  rcs_n: 0.3
+  E: 1
+snn-test:
+  epsilon: 0.0
+  decay_factor: 0.5
+  cutoff_name: topk
+  reset_mode: soft
+  model_path: cifar10.pth
+logging:
+  wandb_logging: 'False'
+  tensorboard_logging: 'False'
+  comet_logging: 'False'
+  run_dir: none

@@ -6,7 +6,7 @@
 <img src="./docs/_static/wireless_ch.png" width="800">
 </p>
 
-This repository implements Neuromorphic Wireless Split Computing using Multi-Level Spikes. The code is based on [SNNCutoff](https://dengyu-wu.github.io/snncutoff/).
+This repository implements Neuromorphic Wireless Split Computing using Multi-Level Spikes. The code is based on [SNNCutoff](https://github.com/Dengyu-Wu/snncutoff).
 
 ---
 

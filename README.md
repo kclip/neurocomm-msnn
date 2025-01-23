@@ -27,7 +27,7 @@ This repository implements **Neuromorphic Wireless Split Computing** using Multi
 ### Noiseless Training
 Run the following script for noiseless training:
 ```sh
-sh scripts/DirectTraining/tet/training_neurocomm_emu.sh
+sh scripts/DirectTraining/tet/training_neurocomm_noiseless.sh
 ```
 
 ### End-to-End Training with Sampled Channels

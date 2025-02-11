@@ -367,7 +367,8 @@ class wirelss_ch_odfm(nn.Module):
         self.code_rate = 0.5
         self.num_ofdma = neuron_params.num_ofdma
         self.rec_rate = []
-        self.power_constrs = 'block'
+        self.power_constrs = neuron_params.power_constrs
+        self.b = neuron_params.b
         # self.block_power_constrs = True
         
     def forward(self, input):
@@ -379,6 +380,23 @@ class wirelss_ch_odfm(nn.Module):
             return self._forward_digital(input)
     def _forward_noiseless(self, input):
         return input
+
+    def _normalized_power(self,T, E_max, alpha):
+        # Generate weights w_i = alpha^(T-i)
+        weights = np.array([alpha**(T-i) for i in range(1, T+1)])
+        
+        # Normalize weights to ensure average equals E_max
+        scaling_factor = E_max * T / np.sum(weights)
+        P_t = scaling_factor * weights
+        
+        return P_t
+
+    def normalized_power(self,T, E_max, alpha):
+        P_t = self._normalized_power(T, E_max, alpha)
+        _P_t = self._normalized_power(4, E_max, alpha)
+        # P_t[0:4] = _P_t[::-1]
+        return P_t
+
     def _forward_digital(self, input):
         #input shape (time_step, batch_size, num_neurons)
 
@@ -404,11 +422,8 @@ class wirelss_ch_odfm(nn.Module):
         input_decoding_snn = -1 * torch.ones_like(input) # (batch_size, time_step, num_neurons)
 
         E_max = 10 ** (self.E / 10)  # transform db to Watt
-        decay_rate = 0.9  # Decay rate we have tested 0.7 
-        # Power allocation over time
-        E_t = E_max * (1 - decay_rate  * np.arange(1, input.size(0) + 1) / input.size(0))
-        E_t = E_t * (E_max * input.size(0) / np.sum(E_t))  # Normalize to satisfy total energy constraint
-        # E_t = E_t[::-1]
+        T =  input.size(0)
+        E_t = self.normalized_power(T,E_max,self.b)
         for t in range(input.size(0)):
             stream_m_batch = AER_symbol[:,t,:,:]  # (batch_size, num_max_spiking_neurons_over_all_time_and_batch, ceil(log2(num_neurons))+m)
             # print(stream_m_batch.shape[1])
@@ -676,11 +691,9 @@ class wirelss_ch_odfm(nn.Module):
 
 
         E_max = 10 ** (self.E / 10)  # transform db to Watt
-        decay_rate = 0.7  # Decay rate
         # Power allocation over time
-        E_t = E_max * (1 - decay_rate  * np.arange(1, input.size(0) + 1) / input.size(0))
-        E_t = E_t * (E_max * input.size(0) / np.sum(E_t))  # Normalize to satisfy total energy constraint
-        # E_t = E_t[::-1]
+        T =  input.size(0)
+        E_t = self.normalized_power(T,E_max,self.b)
 
         for t in range(input.size(1)):
             OFDM_data = torch.zeros((batch_size, self.num_ofdma, num_allcarriers), dtype=torch.complex64,device=input.device)

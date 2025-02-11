@@ -25,7 +25,9 @@ python  ./scripts/evaluation_power.py \
         \
         neuron_params.vthr=1.0 \
         neuron_params.B=2 \
-        neuron_params.modulation='digital' \
+        neuron_params.modulation='analog' \
+        neuron_params.power_constrs='block' \
+        neuron_params.b=0.5 \
         neuron_params.num_ofdma=2 \
         neuron_params.num_bit=4 \
         neuron_params.tau=0.5 \

@@ -1,6 +1,9 @@
 # NeuroComm-MSNN
 
 ## Neuromorphic Wireless Split Computing with Multi-Level Spikes
+<p align="center">
+<img src="./docs/_static/Introduction.png" width="800">
+</p>
 
 <p align="center">
 <img src="./docs/_static/wireless_ch.png" width="800">

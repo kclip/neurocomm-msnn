@@ -9,7 +9,6 @@ class OutputHook(list):
         if self.output_type=='connection':
             self.append([module.__class__.__name__,module.weight.size(), output.size()])
         elif self.output_type=='activation':
-            # output = output.sum([0,1])
             self.append([output.size(), output])
         elif self.output_type=='reg_loss':
             loss = output

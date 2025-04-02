@@ -72,12 +72,12 @@ class Evaluator:
         predition = self.net(input)
         return predition.max()
         
-    def ANN_OPS(self,input_size):
+    def ANN_OPS(self,input_size,device):
             net = self.net
             print('ANN MOPS.......')
             output_hook = OutputHook(output_type='connection')
             net = sethook(output_hook,output_type='connection')(net)
-            inputs = torch.randn(input_size).unsqueeze(0).to(net.device)
+            inputs = torch.randn(input_size).to(device)
             outputs = net(inputs)
             connections = list(output_hook)
             net = sethook(output_hook)(net,remove=True)
@@ -85,7 +85,8 @@ class Evaluator:
             for name,w,output in connections:
                 fin = torch.prod(torch.tensor(w))
                 N_neuron = torch.prod(torch.tensor(output))
-                tot_fp += (fin*2+1)*N_neuron
+                # tot_fp += (fin*2+1)*N_neuron
+                tot_fp += fin*N_neuron
             print(tot_fp)
             return tot_fp
     
@@ -139,10 +140,7 @@ class Evaluator:
                     fin = fin_tot[n]
                     N_neuron = torch.prod(torch.tensor(output_size)[2:])
                     tot_fp += fin*s_avg*N_neuron 
-                    bit_width = self.args.neuron_params.num_bit 
-                    bit_width = 1 if bit_width == 0 else bit_width
-                    s_avg = ((output_spike>0).float()*bit_width).sum()/N_neuron
-                    # s_avg = output_spike.sum()/N_neuron
+                    s_avg = ((output_spike>0).float()).sum()/N_neuron
                     n += 1
                 tot_sop += tot_fp
                 i += data.size()[1]

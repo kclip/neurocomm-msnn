@@ -52,14 +52,15 @@ sh scripts/DirectTraining/tet/graded_spike_evaluation_power.sh
 
 <!-- Citation -->
 ## Citation
-For more details, please refer to the <a href="https://arxiv.org/abs/2411.04728">paper</a>.
+For more details, please refer to the <a href="https://ieeexplore.ieee.org/abstract/document/10946192">paper</a>.
 
 ```
-@article{wu2024neuromorphic,
+@article{wu2025neuromorphic,
   title={Neuromorphic Wireless Split Computing with Multi-Level Spikes},
   author={Wu, Dengyu and Chen, Jiechen and Rajendran, Bipin and Poor, H Vincent and Simeone, Osvaldo},
-  journal={arXiv preprint arXiv:2411.04728},
-  year={2024}
+  journal={IEEE Transactions on Machine Learning in Communications and Networking},
+  year={2025},
+  publisher={IEEE}
 }
 ```
 
